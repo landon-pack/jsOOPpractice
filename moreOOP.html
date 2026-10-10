@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Payroll</title>
+</head>
+<body>
+    <h1>
+        Employee Payroll
+    </h1>
+
+    <button onclick="displayPayroll()">Display Payroll</button>
+
+
+
+
+<script>
+    class Employee
+    {
+        constructor(firstName, lastName, employeeId)
+        {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.employeeId = employeeId;
+        }
+
+        getEmployeeInfo()
+        {
+            return "Name: " + this.firstName + " " + this.lastName +  "\nID: " + this.employeeId
+        }
+
+    }
+
+    class HourlyEmployee extends Employee
+    {
+        constructor(firstName, lastName, employeeId, hoursWorked, hourlyWage)
+        {
+            super(firstName, lastName, employeeId);
+            this.hoursWorked = hoursWorked;
+            this.hourlyWage = hourlyWage;
+        }
+
+        calculatePay()
+        {
+            let fGrossPay = 0;
+            if (this.hoursWorked < 40)
+            {
+                fGrossPay = this.hoursWorked * this.hourlyWage;
+            }
+            else
+            {
+                let iHoursOver40 = this.hoursWorked - 40;
+                let fRegularPay = (this.hoursWorked - iHoursOver40) * this.hourlyWage;
+                let fOvertime = iHoursOver40 * (this.hourlyWage * 1.5);
+
+                fGrossPay = fRegularPay + fOvertime;
+
+            }
+            return fGrossPay;
+        }
+
+
+        getEmployeeInfo()
+        {
+            return super.getEmployeeInfo() + "\nType: Hourly" + "\nHours worked: " + this.hoursWorked + 
+                                        "\nHourly wage: " + this.hourlyWage + "\nGross pay: " + this.calculatePay();
+        }
+    }
+
+    class SalariedEmployee extends Employee
+    {
+        constructor(firstName, lastName, employeeId, annualSalary)
+        {
+            super(firstName, lastName, employeeId);
+            this.annualSalary = annualSalary;
+        }
+
+        calculatePay()
+        {
+            let fMonthlyPay = this.annualSalary / 12
+            return fMonthlyPay;
+        }
+
+        getEmployeeInfo()
+        {
+            return super.getEmployeeInfo() + "\nType: Salaried" + "\nAnnual Salary: " + this.annualSalary +
+                                            "\nMonthly pay: " + this.calculatePay().toFixed(2);
+        }
+
+    }
+
+
+    const aEmployees = [];
+
+    let oHourly1 = new HourlyEmployee("James","Taylor", 1001, 45, 20)
+    let oHourly2 = new HourlyEmployee("Taylor", "Kopecky", 1002, 50, 25)
+    let oSalary1 = new SalariedEmployee("Bob", "Brandy", 1003, 85000)
+    let oSalary2 = new SalariedEmployee("Nick", "Costella", 1004, 96000)
+
+
+    aEmployees.push(oHourly1)
+    aEmployees.push(oHourly2)
+    aEmployees.push(oSalary1)
+    aEmployees.push(oSalary2)
+
+
+function displayPayroll()
+{
+    let sOutput = "";
+    aEmployees.forEach(employee => {
+        sOutput += employee.getEmployeeInfo() + "\n------------------------------\n"
+        
+    });
+    console.log(sOutput)
+
+    calculatePayrollSummary()
+}
+
+function calculatePayrollSummary()
+{
+    let iHourlyCount = 0;
+    let iSalariedCount = 0;
+    let iTotalCount = 0;
+    let fTotalPayroll = 0;
+    let oHighest = aEmployees[0];
+    let fAvgPay = 0;
+    let sOutput = "";
+    aEmployees.forEach(employee =>
+    {
+        if (employee instanceof HourlyEmployee)
+        {
+            iHourlyCount++
+        }
+        else if (employee instanceof SalariedEmployee)
+        {
+            iSalariedCount++
+        }
+
+        iTotalCount++
+        fTotalPayroll+= employee.calculatePay()
+
+    });
+
+    aEmployees.forEach(employee =>
+        {
+            if (oHighest.calculatePay() < employee.calculatePay())
+            {
+                oHighest = employee
+            }
+        });
+
+    fAvgPay = fTotalPayroll / iTotalCount
+
+
+    sOutput = "Payroll Summary:" + "\n------------------------------" + "\nTotal number of employees: " + iTotalCount + "\nNumber of hourly employees: " 
+            + iHourlyCount + "\nNumber of salaried employees: " + iSalariedCount + "\nTotal payroll: " + fTotalPayroll.toFixed(2) +
+            "\nAverage pay: " + fAvgPay.toFixed(2) + "\nHighest paid employee: " + oHighest.firstName + " " + oHighest.lastName
+
+    console.log(sOutput)
+
+};
+
+
+
+
+</script>
+</body>
+</html>
